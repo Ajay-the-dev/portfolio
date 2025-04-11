@@ -32,7 +32,7 @@
                                 v-for="img in skills"
                                 :key="img + n"
                                 class="h-12 mx-4"
-                                :src="'/src/assets/icons/' + img + '.svg'"
+                                :src="'/portfolio/src/assets/icons/' + img + '.svg'"
                                 :alt="img"
                                 :title="img"
                                 />
