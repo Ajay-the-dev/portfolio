@@ -1,0 +1,408 @@
+<template>
+  <div id="home">
+    <div ref="sceneContainer" class="three-container"></div>
+  </div>
+</template>
+
+<script>
+
+import { shallowRef, onMounted, onUnmounted } from "vue";
+import * as THREE from "three";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { Color } from "three";
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+export default {
+  name: "ThreeD",
+  components: {
+    
+  },
+  setup() {
+    const sceneContainer = shallowRef(null);
+
+    // Setup Scene
+    const scene = new THREE.Scene();
+
+    let camera, renderer, cube, animationFrameId, textMesh,loader2;
+
+    const locations = ['intro','about','projects','contact'];
+    var currentLocation = 0;
+
+    // const locations = JSON.parse([{"x":-2,"y":-0.9999999999999998,"z":1.4},{"x":-2.0000000000000004,"y":-1.0999999999999999,"z":-6.099999999999995},{"x":-2.0000000000000004,"y":-1.0999999999999999,"z":-13.099999999999971},{"x":-2.0000000000000004,"y":-1.0999999999999999,"z":-19.000000000000004}]);
+
+    camera = new THREE.PerspectiveCamera(
+        75, //field of view
+        window.innerWidth / window.innerHeight, //aspect ratio,
+        0.1, //near clipping plane,
+        1000 //far clipping plane
+      );
+
+      camera.position.setX(-2);
+      camera.position.setY(-1);
+      camera.position.setZ(1.4);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      const blackTexture = new THREE.TextureLoader().load("/src/assets/black.jpg");
+      
+      
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(2, 0.5, 16, 100),
+        new THREE.MeshPhysicalMaterial({ map: blackTexture })
+      );
+
+      // const torus2 = new THREE.Mesh(
+      //   new THREE.TorusGeometry(2, 0.5, 16, 100),
+      //   new THREE.MeshPhysicalMaterial({ map: blackTexture })
+      // );
+
+      // const torus3 = new THREE.Mesh(
+      //   new THREE.TorusGeometry(2, 0.5, 16, 100),
+      //   new THREE.MeshPhysicalMaterial({ map: blackTexture })
+      // );
+
+      // const torus4 = new THREE.Mesh(
+      //   new THREE.TorusGeometry(2, 0.5, 16, 100),
+      //   new THREE.MeshPhysicalMaterial({ map: blackTexture })
+      // );
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      // Disable zoom and pan if needed
+      controls.enableZoom = false;
+      controls.enablePan = true;
+
+      // Lock vertical movement (Y-axis rotation only, horizontal orbit)
+      controls.minPolarAngle = Math.PI / 2; // 90 degrees
+      controls.maxPolarAngle = Math.PI / 2;
+
+      // torus2.translateZ(-7);
+
+      // torus3.translateZ(-14);
+
+      // torus4.translateZ(-21);
+
+      scene.add(torus);
+     
+
+      const imageTexture = new THREE.TextureLoader().load("/src/assets/profile.jpg");
+
+      const geometry = new THREE.PlaneGeometry(0.7, 0.7);
+      const material = new THREE.MeshBasicMaterial({
+        map: imageTexture,
+        side: THREE.DoubleSide,
+      });
+      const plane = new THREE.Mesh(geometry, material);
+
+      plane.rotateX(0);
+      plane.rotateZ(0);
+      plane.translateZ(0.5);
+      plane.rotateY(-1.7);
+
+      scene.add(plane);
+
+      const loader = new FontLoader();
+
+      loader.load(
+                  "/../node_modules/three/examples/fonts/droid/droid_sans_bold.typeface.json",
+                  function (font) {
+                    const txt = new TextGeometry("Ajay Chitambaran", {
+                      font: font,
+                      height: 0.1,
+                      size: 0.1,
+                      depth: 0.01,
+                    });
+
+                    const textTexture = new THREE.TextureLoader().load("/src/assets/txt.jpg");
+                    const matLite = new THREE.MeshPhysicalMaterial({ color: 0xffffff });
+
+                    textMesh = new THREE.Mesh(txt, matLite); // Remove 'const' here!
+                    textMesh.position.copy(plane.position);
+                    textMesh.rotation.copy(plane.rotation);
+                    textMesh.position.z += 0.45;
+                    // scene.add(textMesh);
+                  }
+                );
+      const gridHelper = new THREE.GridHelper(10, 10);
+
+      const axisHelper = new THREE.AxesHelper(5);
+      // scene.add(axisHelper);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 9);
+      scene.add(ambientLight);
+
+      
+      loader2 = new GLTFLoader();
+      loader2.load('/src/assets/name.glb', (gltf) => {
+        scene.add(gltf.scene); // Add the loaded model to the scene
+        gltf.scene.scale.set(0.18, 0.18,0.18); // Optionally scale the model
+        gltf.scene.position.set(0, 0, 0); // Optionally position the model
+
+        // camera.position.set(0, 0, 5);
+        gltf.scene.position.copy(plane.position);
+        gltf.scene.rotation.copy(plane.rotation);
+        gltf.scene.position.z += 0.5;
+
+        let x = 1;
+
+
+        gltf.scene.rotateX(Math.PI / 180 * 90);
+
+        
+      }, undefined, (error) => {
+        console.error(error);
+      });
+      
+      
+      const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener("resize", handleResize);
+
+
+
+      const moveCamera = (z,x,y,positive)=>
+      {
+
+          
+          
+          const updateZRequired = camera.position.z <= z.from && camera.position.z > z.to;
+          const updateXRequired = camera.position.x <= x.from && camera.position.x >= x.to;
+          const updateYRequired = camera.position.y <= y.from && camera.position.y >= y.to;
+          if(z)
+          {
+              if(updateZRequired)
+              {
+                if(positive)
+                {
+                  camera.position.set(camera.position.x , camera.position.y, camera.position.z - 0.1);
+                }
+                else{
+                  camera.position.set(camera.position.x , camera.position.y, camera.position.z + 0.1);
+                }
+              }
+          }
+
+          if(x)
+          {
+              if(updateXRequired)
+              {
+                if(positive)
+                {
+                  camera.position.set(camera.position.x - 0.1 , camera.position.y, camera.position.z);
+                }
+                else{
+                  camera.position.set(camera.position.x + 0.1 , camera.position.y, camera.position.z);
+                }
+              }
+          }
+
+          if(y)
+          {
+              if(updateYRequired)
+              {
+                if(positive)
+                {
+                  camera.position.set(camera.position.y , camera.position.y - 0.1, camera.position.z);
+                }
+                else{
+                  camera.position.set(camera.position.y , camera.position.y + 0.1, camera.position.z);
+                }
+              }
+          }
+      }
+
+      const updateLocation = (location) =>{
+        console.log(location);
+  
+
+      //   switch (location) {
+      //           case 'about':
+      //               var zindex = {};
+      //               zindex.from = camera.position.z;
+      //               zindex.to = -6;
+
+      //               var xindex = {}
+      //               xindex.from = camera.position.x;
+      //               xindex.to = -2;
+
+      //               var yindex = {}
+      //               yindex.from = camera.position.y;
+      //               yindex.to = -1;
+                    
+      //               var target = locations.findIndex((element) => element === "about");
+
+
+      //               var vector;
+      //               if(currentLocation < target)
+      //               {
+      //                   vector = true;
+      //               }
+      //               else if(currentLocation > target)
+      //               {
+      //                 vector = false;
+      //               }
+
+      //               console.log("loc : "+currentLocation);
+      //               console.log("to : "+target);
+      //               console.log("vect : "+vector);
+
+      //               if(vector != undefined)
+      //               {
+      //                 moveCamera(zindex,xindex,yindex,vector);
+      //               }
+
+      //               if(zindex == camera.position.z && xindex == camera.position.x && yindex == camera.position.y)
+      //               {
+      //                 currentLocation = target;
+      //               }
+                    
+      //               break;
+            
+      //           case 'projects':
+                  
+      //               var zindex = {};
+      //               zindex.from = camera.position.z;
+      //               zindex.to = -13;
+
+      //               var xindex = {}
+      //               xindex.from = camera.position.x;
+      //               xindex.to = -1.5;
+
+      //               var yindex = {}
+      //               // yindex.from = camera.position.y;
+      //               // yindex.to = camera.position.y;
+                    
+
+      //               var target = locations.findIndex((element) => element === "projects");
+
+      //               var vector;
+      //               if(currentLocation < target)
+      //               {
+      //                   vector = true;
+      //               }
+      //               else if(currentLocation > target)
+      //               {
+      //                 vector = false;
+      //               }
+
+
+
+      //               console.log("loc : "+currentLocation);
+      //               console.log("to : "+target);
+      //               console.log("vect : "+vector);
+
+      //               if(vector != undefined)
+      //               {
+      //                 moveCamera(zindex,xindex,yindex,vector);
+      //               }
+
+      //               if(zindex == camera.position.z && xindex == camera.position.x && yindex == camera.position.y)
+      //               {
+      //                 currentLocation = target;
+      //               }
+                    
+      //               break;
+      //           case 'contact':
+                  
+
+
+      //               var zindex = {};
+      //               zindex.from = camera.position.z;
+      //               zindex.to = -19;
+
+      //               var xindex = {}
+      //               xindex.from = camera.position.x;
+      //               xindex.to = -1.9;
+
+      //               var yindex = {}
+      //               // yindex.from = camera.position.y;
+      //               // yindex.to = camera.position.y;
+
+
+      //               var target = locations.findIndex((element) => element === "contact");
+
+                    
+      //               var vector;
+      //               if(currentLocation < target)
+      //               {
+      //                   vector = true;
+      //               }
+      //               else if(currentLocation > target)
+      //               {
+      //                 vector = false;
+      //               }
+
+
+
+      //               console.log("loc : "+currentLocation);
+      //               console.log("to : "+target);
+      //               console.log("vect : "+vector);
+
+      //               moveCamera(zindex,xindex,yindex,vector);
+      //               // if(vector != undefined)
+      //               // {
+      //               // }
+
+      //               if(zindex == camera.position.z && xindex == camera.position.x && yindex == camera.position.y)
+      //               {
+      //                 currentLocation = target;
+      //               }
+      //               break;
+      //           default:
+      //               break;
+      //       }
+        }
+      const animate = (location) => {
+        
+        requestAnimationFrame(() => animate(location));
+        torus.rotation.z += 0.005;
+        
+
+        // updateLocation(location)
+        renderer.render(scene, camera);
+      };
+      
+      
+      onMounted(() => {
+        // Setup Camera
+        sceneContainer.value.appendChild(renderer.domElement);
+        
+        animate();
+
+      });
+
+      // Cleanup on Unmount
+      onUnmounted(() => {
+        cancelAnimationFrame(animationFrameId);
+        window.removeEventListener("resize", handleResize);
+        renderer.dispose();
+        sceneContainer.value.removeChild(renderer.domElement);
+      });
+
+    return { sceneContainer, updateLocation, animate};
+  },
+};
+</script>
+
+<style scoped>
+.three-container {
+  /* width: 100vw;
+  height: 100vh; */
+  /* overflow: hidden; */
+  /* position: absolute; */
+  z-index: 1;
+}
+
+.cards {
+  z-index: 999;
+  color: black;
+  position: relative;
+  background: white;
+}
+</style>
