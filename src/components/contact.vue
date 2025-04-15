@@ -10,31 +10,31 @@
                 <div class="grid grid-cols-2 gap-5 p-16 w-2/3">
                         <a href="tel:+919746517722" class="text-black hover:underline text-3xl">
                             <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center">
-                                    <img width="50" src="/src/assets/icons/phone.svg" alt="Phone" />
+                                    <img width="50" src="/icons/phone.svg" alt="Phone" />
                             </div>
                         </a>
                         <a href="mailto:ajaychitambaran@gmail.com" class="text-black hover:underline text-3xl">
                             <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center">
-                                    <img width="50" src="/src/assets/icons/email.svg" alt="Email" />
+                                    <img width="50" src="/icons/email.svg" alt="Email" />
                             </div>
                         </a>
                         <a href="https://www.linkedin.com/in/ajaychitambaran/" target="_blank" class="text-black hover:underline text-3xl">
                             <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center">
-                                    <img width="50" src="/src/assets/icons/linkedin.svg" alt="linkedIn" />
+                                    <img width="50" src="/icons/linkedin.svg" alt="linkedIn" />
                             </div>
                         </a>
                         <a href="https://github.com/Ajay-the-dev" target="_blank" class="text-black hover:underline text-3xl">
                             <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center">
-                                <img width="50" src="/src/assets/icons/github.svg" alt="github" />
+                                <img width="50" src="/icons/github.svg" alt="github" />
                             </div>
                         </a>
                         <a href="https://www.instagram.com/ajay_the_dev/profilecard/?igsh=dTY1MGJpYTc5NDAy" target="_blank" class="text-black hover:underline text-3xl">
                             <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center">
-                                <img width="50" src="/src/assets/icons/instagram.svg" alt="instagram" />
+                                <img width="50" src="/icons/instagram.svg" alt="instagram" />
                             </div>
                         </a>
                         <div class="rounded-lg bg-gray-300 h-32 button-pop flex items-center justify-center" @click="resumeDownload">
-                            <img width="50" src="/src/assets/icons/resume.svg" alt="Resume" />
+                            <img width="50" src="/icons/resume.svg" alt="Resume" />
                         </div>
                 </div>
             </div>
@@ -65,9 +65,9 @@ export default {
             };
 
             const resumeDownload = ()=>{
-              console.log('downloading'); 
+            //   console.log('downloading'); 
 
-                    openFileInNewTab('/src/assets/Ajay_C.pdf');
+                    openFileInNewTab('Ajay_C.pdf');
             };
 
             return {

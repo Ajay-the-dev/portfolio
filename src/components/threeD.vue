@@ -46,7 +46,7 @@ export default {
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       
-      const blackTexture = new THREE.TextureLoader().load("/portfolio/src/assets/black.jpg");
+      const blackTexture = new THREE.TextureLoader().load("black.jpg");
       
       
       const torus = new THREE.Mesh(
@@ -88,7 +88,7 @@ export default {
       scene.add(torus);
      
 
-      const imageTexture = new THREE.TextureLoader().load("/portfolio/src/assets/profile.jpg");
+      const imageTexture = new THREE.TextureLoader().load("profile.jpg");
 
       const geometry = new THREE.PlaneGeometry(0.7, 0.7);
       const material = new THREE.MeshBasicMaterial({
@@ -106,26 +106,7 @@ export default {
 
       const loader = new FontLoader();
 
-      loader.load(
-                  "../node_modules/three/examples/fonts/droid/droid_sans_bold.typeface.json",
-                  function (font) {
-                    const txt = new TextGeometry("Ajay Chitambaran", {
-                      font: font,
-                      height: 0.1,
-                      size: 0.1,
-                      depth: 0.01,
-                    });
-
-                    const textTexture = new THREE.TextureLoader().load("/portfolio/src/assets/txt.jpg");
-                    const matLite = new THREE.MeshPhysicalMaterial({ color: 0xffffff });
-
-                    textMesh = new THREE.Mesh(txt, matLite); // Remove 'const' here!
-                    textMesh.position.copy(plane.position);
-                    textMesh.rotation.copy(plane.rotation);
-                    textMesh.position.z += 0.45;
-                    // scene.add(textMesh);
-                  }
-                );
+      
       const gridHelper = new THREE.GridHelper(10, 10);
 
       const axisHelper = new THREE.AxesHelper(5);
@@ -136,7 +117,7 @@ export default {
 
       
       loader2 = new GLTFLoader();
-      loader2.load('/portfolio/src/assets/name.glb', (gltf) => {
+      loader2.load('name.glb', (gltf) => {
         scene.add(gltf.scene); // Add the loaded model to the scene
         gltf.scene.scale.set(0.18, 0.18,0.18); // Optionally scale the model
         gltf.scene.position.set(0, 0, 0); // Optionally position the model
